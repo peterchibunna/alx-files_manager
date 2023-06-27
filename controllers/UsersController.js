@@ -20,7 +20,7 @@ class UsersController {
         return;
       }
       const thisUser = await (await dbClient.users())
-          .insertOne({ email, password: sha1(password) });
+        .insertOne({ email, password: sha1(password) });
       res.status(201).send({ email, id: thisUser.insertedId.toString() });
       return;
     }

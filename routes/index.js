@@ -3,6 +3,7 @@ import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 
 const bodyParser = require('body-parser');
+
 const router = express.Router();
 
 router.get('/status', AppController.getStatus);
