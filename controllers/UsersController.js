@@ -2,7 +2,7 @@
 import sha1 from 'sha1';
 import dbClient from '../utils/db';
 
-class UsersController {
+export default class UsersController {
   static async postNew(req, res) {
     const { email, password } = req.body;
     if (email === undefined) {
@@ -28,5 +28,3 @@ class UsersController {
     res.send('Hello World');
   }
 }
-
-module.exports = UsersController;
