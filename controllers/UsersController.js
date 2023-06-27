@@ -40,7 +40,7 @@ export default class UsersController {
       res.end();
       return;
     }
-    const user = await dbClient.getUserById(id);
+    const user = await (await dbClient.users()).findOne({ id });
     if (!user) {
       res.sendStatus(401);
       res.json({ error: 'Unauthorized' });
