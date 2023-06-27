@@ -19,7 +19,8 @@ class UsersController {
         res.status(400).send({ error: 'Already exist' });
         return;
       }
-      const thisUser = await (await dbClient.users()).insertOne({ email, password: sha1(password) });
+      const thisUser = await (await dbClient.users())
+          .insertOne({ email, password: sha1(password) });
       res.status(201).send({ email, id: thisUser.insertedId.toString() });
       return;
     }
