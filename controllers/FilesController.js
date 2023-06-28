@@ -187,7 +187,7 @@ class FilesController {
       const idObject = new ObjectId(userId);
 
       users.findOne({ _id: idObject }, (err, user) => {
-        if (!user) {
+        if (err) {
           return null;
         }
         return user;
@@ -205,7 +205,7 @@ class FilesController {
     const files = dbClient.files();
     const idObject = new ObjectId(id);
     const newVal = { $set: { isPublic: true } };
-    const options = { returnoriginal: false };
+    const options = { returnOriginal: false };
     files.findOneAndUpdate({ _id: idObject, userId: user._id }, newVal, options, (err, file) => {
       if (!file.lastErrorObject.updatedExisting) {
         return res.status(404).json({ error: 'Not found' });
@@ -224,7 +224,7 @@ class FilesController {
     const files = dbClient.files();
     const idObject = new ObjectId(id);
     const newVal = { $set: { isPublic: false } };
-    const options = { returnoriginal: false };
+    const options = { returnOriginal: false };
     files.findOneAndUpdate({ _id: idObject, userId: user._id }, newVal, options, (err, file) => {
       if (!file.lastErrorObject.updatedExisting) {
         return res.status(404).json({ error: 'Not found' });
