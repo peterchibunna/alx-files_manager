@@ -31,7 +31,6 @@ function isValidObjectId(id) {
 class FilesController {
   /* eslint-disable consistent-return */
   static async getShow(req, res) {
-    // const {user} = req;
     const { id = NULL_OBJECT_ID } = req.params;
     const token = req.header('X-Token');
     const key = `auth_${token}`;
