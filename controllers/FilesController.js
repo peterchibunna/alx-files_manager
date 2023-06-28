@@ -255,13 +255,12 @@ class FilesController {
 
   static async getFile(req, res) {
     const { id } = req.params;
-    const files = dbClient.files();
+    const files = await dbClient.files();
     const idObject = new ObjectId(id);
     files.findOne({ _id: idObject }, async (err, file) => {
       if (!file) {
         return res.status(404).json({ error: 'Not found' });
       }
-      console.log(file.localPath);
       if (file.isPublic) {
         if (file.type === 'folder') {
           return res.status(400).json({ error: "A folder doesn't have content" });
@@ -276,7 +275,7 @@ class FilesController {
           const contentType = mime.contentType(file.name);
           return res.header('Content-Type', contentType).status(200).send(data);
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           return res.status(404).json({ error: 'Not found' });
         }
       } else {
@@ -297,11 +296,11 @@ class FilesController {
             const contentType = mime.contentType(file.name);
             return res.header('Content-Type', contentType).status(200).sendFile(fileName);
           } catch (error) {
-            console.log(error);
+            // console.log(error);
             return res.status(404).json({ error: 'Not found' });
           }
         } else {
-          console.log(`Wrong user: file.userId=${file.userId}; userId=${user._id}`);
+          // console.log(`Wrong user: file.userId=${file.userId}; userId=${user._id}`);
           return res.status(404).json({ error: 'Not found' });
         }
       }
