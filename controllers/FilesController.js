@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { promisify } from 'util';
-import { mkdir, promises, writeFile /* stat, existsSync, realpath */ } from 'fs';
+import { mkdir, promises, writeFile } from 'fs';
 import { join as joinPath } from 'path';
 import { tmpdir } from 'os';
 import { v4 } from 'uuid';
@@ -69,16 +69,15 @@ class FilesController {
     const token = req.header('X-Token');
     const key = `auth_${token}`;
     const userId = await redisClient.get(key);
-    let user = null;
     if (userId) {
       const users = await dbClient.users();
       const idObject = new ObjectId(userId);
-      user = await users.findOne({ _id: idObject });
+      const user = await users.findOne({ _id: idObject });
       if (user) {
         const _searchFilter = {
-          userId: user._id,
+          userId: idObject,
         };
-        if (parentId !== 0 && isValidObjectId(parentId)) {
+        if (parentId !== DEFAULT_PARENT_ID && isValidObjectId(parentId)) {
           _searchFilter.parentId = ObjectId(parentId);
         }
         const _files = await dbClient.files();
@@ -186,13 +185,8 @@ class FilesController {
     if (userId) {
       const users = await dbClient.users();
       const idObject = new ObjectId(userId);
-
-      users.findOne({ _id: idObject }, (err, user) => {
-        if (err) {
-          return null;
-        }
-        return user;
-      });
+      /* eslint-disable-next-line no-return-await */
+      return await users.findOne({ _id: idObject });
     }
     return null;
   }
@@ -203,15 +197,27 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const { id } = req.params;
-    const files = dbClient.files();
+    const files = await dbClient.files();
     const idObject = new ObjectId(id);
     const newVal = { $set: { isPublic: true } };
-    const options = { returnOriginal: false };
+    const options = { returnDocument: false };
     files.findOneAndUpdate({ _id: idObject, userId: user._id }, newVal, options, (err, file) => {
       if (!file.lastErrorObject.updatedExisting) {
-        return res.status(404).json({ error: 'Not found' });
+        return res.status(404).send({ error: 'Not found' });
       }
-      return res.status(200).json(file.value);
+      const {
+        userId, _id, name, type, isPublic, parentId,
+      } = file.value;
+      return res.status(200).send({
+        id: _id,
+        userId,
+        name,
+        type,
+        isPublic,
+        parentId: parentId === DEFAULT_PARENT_ID.toString()
+          ? 0
+          : parentId.toString(),
+      });
     });
     return null;
   }
@@ -222,7 +228,7 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const { id } = req.params;
-    const files = dbClient.files();
+    const files = await dbClient.files();
     const idObject = new ObjectId(id);
     const newVal = { $set: { isPublic: false } };
     const options = { returnOriginal: false };
@@ -230,7 +236,19 @@ class FilesController {
       if (!file.lastErrorObject.updatedExisting) {
         return res.status(404).json({ error: 'Not found' });
       }
-      return res.status(200).json(file.value);
+      const {
+        userId, _id, name, type, isPublic, parentId,
+      } = file.value;
+      return res.status(200).send({
+        id: _id,
+        userId,
+        name,
+        type,
+        isPublic,
+        parentId: parentId === DEFAULT_PARENT_ID.toString()
+          ? 0
+          : parentId.toString(),
+      });
     });
     return null;
   }
