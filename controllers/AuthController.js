@@ -1,5 +1,5 @@
 /* eslint-disable import/no-named-as-default */
-import v4 from 'uuid';
+import { v4 } from 'uuid';
 import sha1 from 'sha1';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
@@ -16,7 +16,7 @@ class AuthController {
       return;
     }
     const hashedPwd = sha1(data[1]);
-    const users = dbClient.db.collection('users');
+    const users = await dbClient.users();
     users.findOne({ email: data[0], password: hashedPwd }, async (err, user) => {
       if (user) {
         const token = v4();
