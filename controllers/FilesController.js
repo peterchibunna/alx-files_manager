@@ -217,7 +217,8 @@ class FilesController {
     const files = await dbClient.files();
     const idObject = new ObjectId(id);
     const newVal = { $set: { isPublic: true } };
-    const options = { returnDocument: false };
+    const options = { returnOriginal: false };
+
     files.findOneAndUpdate({ _id: idObject, userId: user._id }, newVal, options, (err, file) => {
       if (!file.lastErrorObject.updatedExisting) {
         return res.status(404).send({ error: 'Not found' });
