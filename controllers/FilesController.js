@@ -56,11 +56,12 @@ class FilesController {
           name, type, isPublic, parentId,
         } = file;
         return res.status(200).send({
-          id, userId, name, type, isPublic,
+          id,
+          userId,
+          name,
+          type,
+          isPublic,
           parentId: parentId === '0' ? 0 : parentId,
-          // parentId: parentId === DEFAULT_PARENT_ID.toString()
-          //     ? 0
-          //     : parentId,
         });
       }
     }
@@ -186,9 +187,8 @@ class FilesController {
                 type,
                 isPublic,
                 parentId: parentId === DEFAULT_PARENT_ID.toString()
-                    ? 0
-                    : parentId,
-                // parentId: parentId === '0' ? 0 : new ObjectId(parentId),
+                  ? 0
+                  : parentId,
               });
             }
           } else {
