@@ -76,8 +76,8 @@ userQueue.process(async (job, done) => {
   if (!user) {
     throw new Error('User not found');
   }
-
   console.log(`Welcome ${user.email}!`);
+  const {email} = user;
   try {
     const _subject = 'Project: ALX-Files_Manager';
     const _htmlContent = '<div><h2>Hello {{user.name}},</h2>'
@@ -97,7 +97,7 @@ userQueue.process(async (job, done) => {
         + 'This is a team work by:'
         + '<ul><li>Peter Onwuzuruigbo </li><li>Clinton Mokaya</li></ul>'
         + '</div>';
-    Mailer.sendMail(Mailer.buildMessage(user.email, _subject, _htmlContent));
+    Mailer.sendMail(Mailer.buildMessage(email, _subject, _htmlContent));
     done();
   } catch (err) {
     done(err);
