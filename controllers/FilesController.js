@@ -56,7 +56,11 @@ class FilesController {
           name, type, isPublic, parentId,
         } = file;
         return res.status(200).send({
-          id, userId, name, type, isPublic, parentId: parentId === '0' ? 0 : parentId,
+          id, userId, name, type, isPublic,
+          parentId: parentId === '0' ? 0 : parentId,
+          // parentId: parentId === DEFAULT_PARENT_ID.toString()
+          //     ? 0
+          //     : parentId,
         });
       }
     }
@@ -96,7 +100,7 @@ class FilesController {
               type: '$type',
               isPublic: '$isPublic',
               parentId: {
-                $cond: { if: { $eq: ['$parentId', '0'] }, then: 0, else: '$parentId' },
+                $cond: { if: { $eq: ['$parentId', '0'] }, then: '0', else: '$parentId' },
               },
             },
           },
@@ -181,7 +185,10 @@ class FilesController {
                 name,
                 type,
                 isPublic,
-                parentId: parentId === 0 ? 0 : new ObjectId(parentId),
+                parentId: parentId === DEFAULT_PARENT_ID.toString()
+                    ? 0
+                    : parentId,
+                // parentId: parentId === '0' ? 0 : new ObjectId(parentId),
               });
             }
           } else {
@@ -234,7 +241,7 @@ class FilesController {
         isPublic,
         parentId: parentId === DEFAULT_PARENT_ID.toString()
           ? 0
-          : parentId.toString(),
+          : parentId,
       });
     });
     return null;
